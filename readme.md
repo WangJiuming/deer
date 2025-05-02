@@ -32,7 +32,7 @@ conda env create -f env.yml
 ```
 **Option 2. with flash attention**
 
-Alternatively, if the machine supports flash attention, run the following to install the environment with flash attention. This is recommended for compatible GPUs for a significant speed-up.
+Alternatively, an environment with flash attention can be installed if the hardware supports it (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repo</a>). This is recommended for compatible GPUs for a significant speed-up.
 ```bash
 conda env create -f env_fa.yml
 ```
