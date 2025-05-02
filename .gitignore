@@ -1,0 +1,10 @@
+# ignore the checkpoint folder
+ckpt/
+
+# ignore the result folder
+result/
+
+# ignore the pycache and log folders
+__pycache__/
+lightning_logs/
+
