@@ -26,11 +26,11 @@ We recommend using Conda for managing dependencies.
 
 First, create the Conda environment with one of the following two installation options.
 
-**Option 1. standard installation.**
+**Option 1. standard installation**
 ```bash
 conda env create -f env.yml
 ```
-**Option 2. with flash attention.**
+**Option 2. with flash attention**
 
 Alternatively, if the machine supports flash attention, run the following to install the environment with flash attention. This is recommended for compatible GPUs for a significant speed-up.
 ```bash
@@ -50,8 +50,11 @@ Follow these steps to download the necessary resources and run the example enzym
 
 The pre-trained model checkpoints are available on servers. To download them to perform inference, run the following.
 ```bash
-wget xxx
+https://proj.cse.cuhk.edu.hk/aihlab/gmps/api/download?filename=ckpt.pt -O ckpt.pt
 ```
+Alternatively, in case the above link is unavailable, the checkpoint can also be downloaded manually using <a href="https://drive.google.com/file/d/1C8drHpS4-9ONblpR_lUi5iijcJeL0irZ/view?usp=drive_link">this link</a>.
+
+
 Then decompress the file.
 ```bash
 unzip -d ckpt.zip
@@ -78,7 +81,7 @@ Embeddings will be saved to a `./results/reprs.pkl` file (or other places specif
 
 **Note**: You may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`) or batch size (`batch_size`), based on your hardware.
 
-**Step 2. perform retrieval**
+**Step 2. perform dense retrieval**
 
 Once embeddings are generated, use `do_retrieval.py` to calculate pairwise similarities.
 ```bash

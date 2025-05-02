@@ -1,5 +1,6 @@
 # ignore the checkpoint folder
 ckpt/
+ckpt.zip
 
 # ignore the result folder
 result/
