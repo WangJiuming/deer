@@ -15,11 +15,11 @@ device = 'cuda:0'
 model_arch = 'saprot_35m'
 model_path = '../ckpt/saprot_35m'
 
-fasta_path = Path('../../data/test.fasta')
-metadata_path = Path('../../data/test_metadata.csv')
+fasta_path = Path('../data/test.fasta')
+metadata_path = Path('../data/test_metadata.csv')
 fs_data_path = Path('../data/test_3di_tokens.txt')
 
-save_pkl_path = Path(f'../../data/test_{model_arch}_inputs.pkl')
+save_pkl_path = Path(f'../data/test_{model_arch}_inputs.pkl')
 
 # --------------------------------------
 # process the data
@@ -37,7 +37,7 @@ print(f'Number of input sequences: {len(seq_ids)}')
 metadata_df = pd.read_csv(metadata_path)
 print(metadata_df.head())
 
-structure_id2uniprot_id = {s_id: uniprot_id for s_id, uniprot_id in
+structure_id2seq_id = {s_id: uniprot_id for s_id, uniprot_id in
                            zip(metadata_df['structure_id'], metadata_df['seq_id'])}
 
 # 3. get the 3di tokens
@@ -47,9 +47,13 @@ with open(fs_data_path, 'r') as f:
     for line in tqdm(f):
         items = line.strip().split('\t')
 
-        name = Path(items[0].split()[0]).stem
+        struct_id = Path(items[0].split()[0]).stem
+        seq_id = structure_id2seq_id.get(struct_id, None)
+        # print(name)
+        # input('...')
 
-        if name not in seq_ids:
+        if seq_id not in seq_ids:
+            print(seq_id)
             continue
 
         seq = items[1]
@@ -57,7 +61,7 @@ with open(fs_data_path, 'r') as f:
 
         combined_seq = ''.join(a + b.lower() for a, b in zip(seq, fs_seq))
 
-        fs_data[name] = combined_seq
+        fs_data[seq_id] = combined_seq
 
 print(f'Number of sequences with tokens: {len(fs_data)}')
 

@@ -12,8 +12,8 @@ device = 'cuda:0'
 
 esm_arch = 'esm2_35m'
 
-fasta_path = Path('./data/test.fasta')
-save_pkl_path = Path(f'./data/test_{esm_arch}_inputs.pkl')
+fasta_path = Path('../data/test.fasta')
+save_pkl_path = Path(f'../data/test_{esm_arch}_inputs.pkl')
 
 # --------------------------------------
 # process the data

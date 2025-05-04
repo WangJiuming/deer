@@ -9,3 +9,8 @@ result/
 __pycache__/
 lightning_logs/
 
+# ignore the large files in the data folder
+data/pdb
+data/test_3di_tokens.txt
+
+
