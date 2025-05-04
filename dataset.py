@@ -34,7 +34,7 @@ class GMPSDataset(Dataset):
         self.seq_dict = {record.id: str(record.seq) for record in records}
 
         meta_df = pd.read_csv(self.meta_path)
-        self.label_dict = {seq_id: ec for seq_id, ec in zip(meta_df['uniprot_id'], meta_df['ec_number'])}
+        self.label_dict = {seq_id: ec for seq_id, ec in zip(meta_df['seq_id'], meta_df['ec_number'])}
 
         self.ec2seq_ids = defaultdict(list)
         for seq_id, ec in self.label_dict.items():

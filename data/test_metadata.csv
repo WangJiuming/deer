@@ -1,4 +1,4 @@
-uniprot_id,structure_id,ec_number,organism,is_human_template,is_bacteria_target
+seq_id,structure_id,ec_number,organism,is_human_template,is_bacteria_target
 P05102,10mh_A,2.1.1.37,bacteria,False,True
 P0ABP8,1a69_A,2.4.2.1,bacteria,False,True
 P09598,1ah7_A,3.1.4.3,bacteria,False,True
