@@ -9,10 +9,11 @@
 
 ## Table of Contents
 
+* [About this repository](#about-this-repository)
 * [Installation](#installation)
-* [Getting Started](#getting-started)
-  * [Download Resources](#download-resources)
-  * [Running the Example](#running-the-retrieval-example)
+* [Getting started](#getting-started)
+  * [Download resources](#download-resources)
+  * [Running the example](#running-the-retrieval-example)
 * [Citation](#citation)
 * [References](#references)
 
