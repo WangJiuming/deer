@@ -24,8 +24,8 @@ def do_retrieval(metadata_path, repr_pkl_path, save_sim_pkl_path):
 
     print('Number of representations:', len(repr_dict))
 
-    bacteria_ids = metadata_df[metadata_df['organism'] == 'bacteria']['uniprot_id'].values
-    eukaryota_ids = metadata_df[metadata_df['organism'] != 'bacteria']['uniprot_id'].values  # not bacteria is eukaryota
+    bacteria_ids = metadata_df[metadata_df['organism'] == 'bacteria']['seq_id'].values
+    eukaryota_ids = metadata_df[metadata_df['organism'] != 'bacteria']['seq_id'].values  # not bacteria is eukaryota
 
     print(f'Number of bacteria IDs: {len(bacteria_ids)}')
     print(f'Number of eukaryota IDs: {len(eukaryota_ids)}')
