@@ -51,7 +51,7 @@ Follow these steps to download the necessary resources and run the example enzym
 
 The pre-trained model checkpoints are available on servers. To download them to perform inference, run the following.
 ```bash
-https://proj.cse.cuhk.edu.hk/aihlab/gmps/api/download?filename=ckpt.pt -O ckpt.pt
+wget https://huggingface.co/jmwang9/deer/resolve/main/ckpt.zip -O ckpt.pt
 ```
 Alternatively, in case the above link is unavailable, the checkpoint can also be downloaded manually using <a href="https://drive.google.com/file/d/1C8drHpS4-9ONblpR_lUi5iijcJeL0irZ/view?usp=drive_link">this link</a>.
 
