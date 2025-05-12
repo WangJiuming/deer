@@ -96,7 +96,7 @@ python test.py --config ./config/config_test.yaml
 This script will process the sequences defined in the configuration file.
 Embeddings will be saved to a `./results/reprs.pkl` file (or other places specified within `config_test.yaml`).
 
-**Note**: You may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`) or batch size (`batch_size`), based on your hardware.
+**Note**: Based on the hardware, users may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`), batch size (`batch_size`), or worker number (`num_workers`).
 
 **Step 2. perform dense retrieval**
 
