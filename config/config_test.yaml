@@ -21,7 +21,7 @@ model:
   esm_arch: 'esm2_35m'
   saprot_arch: 'saprot_35m'
 
-  use_fa: false
+  use_fa: true
 
   saprot_model_dir: './ckpt/saprot_35m'  # path to the downloaded saprot model's directory
 
