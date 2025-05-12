@@ -33,7 +33,7 @@ We recommend using Conda for managing dependencies. Users may choose from the fo
 
 **Option 1. GPU with flash attention (recommended)**
 
-If the hardware supports flash attention (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repository</a>). This is recommended for compatible GPUs for a significant speed-up.
+If the hardware supports flash attention (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repository</a> [1]). This is recommended for compatible GPUs for a significant speed-up.
 
 ```bash
 conda env create --name deer -file env/env_gpu_fa.yml
@@ -77,7 +77,7 @@ Then decompress the file.
 unzip -d ckpt.zip
 ```
 The `./ckpt/` directory should now contain:
-*   `saprot_35m/`: Files required for the underlying SaProt protein language model [1].
+*   `saprot_35m/`: Files required for the underlying SaProt protein language model [2].
 *   `deer_checkpoint.ckpt`: The pre-trained DEER model checkpoint.
 
 ### Running the retrieval example
@@ -127,4 +127,8 @@ If you use DEER or this codebase in your research, please cite our paper:
 
 ## References
 
-[1] Su, Jin, et al. "Saprot: Protein language modeling with structure-aware vocabulary." bioRxiv (2023): 2023-10.
+[1] Dao, Tri, et al. "Flashattention: Fast and memory-efficient exact attention with io-awareness." Advances in neural information processing systems 35 (2022): 16344-16359.
+
+[2] Su, Jin, et al. "Saprot: Protein language modeling with structure-aware vocabulary." bioRxiv (2023): 2023-10.
+
+
