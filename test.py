@@ -23,23 +23,37 @@ def main():
 
     pl.seed_everything(config['experiment']['seed'], workers=True)
 
-    devices = [int(d) for d in config['experiment']['device'].split(',')]
-    print(f'Using device: {devices}')
+    if config['experiment']['device'] == 'cpu':
+        print('Using cpu device')
+    else:
+        devices = [int(d) for d in config['experiment']['device'].split(',')]
+        print(f'Using cuda device: {devices}')
 
     data_module = GMPSDataModule(config)
 
     model = GMPSModel.load_from_checkpoint(config['test']['ckpt_path'], config=config)
     model.eval()
 
-    trainer = pl.Trainer(
-        num_sanity_val_steps=0,
-        logger=None,
-        precision='bf16-mixed',
-        accelerator='gpu',
-        devices=devices,
-        strategy='ddp',
-        deterministic=True,
-    )
+    if config['experiment']['device'] == 'cpu':
+        trainer = pl.Trainer(
+            num_sanity_val_steps=0,
+            logger=None,
+            precision='bf16-mixed',
+            accelerator='cpu',
+            devices=1,
+            strategy='auto',
+            deterministic=True,
+        )
+    else:
+        trainer = pl.Trainer(
+            num_sanity_val_steps=0,
+            logger=None,
+            precision='bf16-mixed',
+            accelerator='gpu',
+            devices=devices,
+            strategy='ddp',
+            deterministic=True,
+        )
 
     trainer.predict(model=model, datamodule=data_module)
 
