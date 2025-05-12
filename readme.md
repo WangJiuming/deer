@@ -23,22 +23,38 @@ DEER (Dense Enzyme Retrieval) provides a method for finding functionally related
 
 ## Installation
 
-We recommend using Conda for managing dependencies.
-
-First, create the Conda environment with one of the following two installation options.
-
-**Option 1. standard installation**
+First, clone the codebase.
 ```bash
-conda env create -f env.yml
-```
-**Option 2. with flash attention**
-
-Alternatively, an environment with flash attention can be installed if the hardware supports it (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repo</a>). This is recommended for compatible GPUs for a significant speed-up.
-```bash
-conda env create -f env_fa.yml
+git clone https://github.com/WangJiuming/deer.git
+cd deer
 ```
 
-Then activate the environment.
+We recommend using Conda for managing dependencies. Users may choose from the following three options based on the hardware available.
+
+**Option 1. GPU with flash attention (recommended)**
+
+If the hardware supports flash attention (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repository</a>). This is recommended for compatible GPUs for a significant speed-up.
+
+```bash
+conda env create --name deer -file env/env_gpu_fa.yml
+```
+
+**Option 2. standard GPU**
+
+If the GPU is not compatible with flash attention, users may proceed with a standard GPU installation.
+
+```bash
+conda env create --name deer -file env/env_gpu.yml
+```
+
+**Option 3. CPU**
+
+If no GPU is available, users may also install the CPU-only version. However, it can be expected to be significantly slower than the GPU version.
+```bash
+conda env create --name deer -file env/env_cpu.yml
+```
+
+After installtion with any of the above three options, activate the environment.
 ```bash
 conda activate deer
 ```
