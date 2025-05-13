@@ -89,7 +89,7 @@ Alternatively, in case the above link is unavailable, the checkpoint can also be
 
 Then decompress the file.
 ```bash
-unzip -d ckpt.zip
+unzip ckpt.zip
 ```
 The `./ckpt/` directory should now contain:
 *   `saprot_35m/`: Files required for the underlying SaProt protein language model [2].
