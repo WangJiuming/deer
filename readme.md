@@ -36,7 +36,7 @@ We recommend using Conda for managing dependencies. Users may choose from the fo
 If the hardware supports flash attention (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repository</a> [1]). This is recommended for compatible GPUs for a significant speed-up.
 
 ```bash
-conda env create --name deer -file env/env_gpu_fa.yml
+conda env create --name deer --file env/env_gpu_fa.yml
 ```
 
 **Option 2. standard GPU**
@@ -44,14 +44,14 @@ conda env create --name deer -file env/env_gpu_fa.yml
 If the GPU is not compatible with flash attention, users may proceed with a standard GPU installation.
 
 ```bash
-conda env create --name deer -file env/env_gpu.yml
+conda env create --name deer --file env/env_gpu.yml
 ```
 
 **Option 3. CPU**
 
 If no GPU is available, users may also install the CPU-only version. However, it can be expected to be significantly slower than the GPU version.
 ```bash
-conda env create --name deer -file env/env_cpu.yml
+conda env create --name deer --file env/env_cpu.yml
 ```
 
 After installtion with any of the above three options, activate the environment.
