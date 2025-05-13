@@ -99,6 +99,8 @@ The `./ckpt/` directory should now contain:
 
 We provide an example dataset in the `data/` directory to demonstrate the retrieval process. This dataset contains 5,849 enzyme sequences (1,636 Eukaryota templates and 4,213 Bacteria enzymes) and was used for benchmarking in our paper. The tokenized dataset for the model are also present in `data/`.
 
+To work with new queries and databases, we also provide the complete data generation workflow, as described in the `preprocess/` directory.
+
 There are two steps to perform retrieval on the working example dataset.
 
 **Step 1. generate embeddings**
