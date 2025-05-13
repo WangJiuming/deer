@@ -40,7 +40,7 @@ def main():
             logger=None,
             precision='bf16-mixed',
             accelerator='cpu',
-            devices=1,
+            devices='auto',
             strategy='auto',
             deterministic=True,
         )
