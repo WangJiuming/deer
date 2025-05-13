@@ -42,7 +42,7 @@ class GMPSModel(pl.LightningModule):
         match self.esm_arch:
             case 'esm2_35m':
                 self.esm_model = FAEsmForMaskedLM.from_pretrained(
-                    f'facebook/esm2_t12_35M_UR50D', use_fa=self.use_fa
+                    f'./ckpt/esm2_t12_35M_UR50D/', use_fa=self.use_fa
                 )
                 self.esm_dim = 480
 
