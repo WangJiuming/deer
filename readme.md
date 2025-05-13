@@ -1,9 +1,24 @@
-<p align="center">
+<!-- <p align="center">
 
   <h3 align="center">Dense Enzyme Retrieval (DEER)</h3>
 
   <p align="center">
     Supporting code for the paper
+  </p>
+</p> -->
+<p align="center">
+  <h2 align="center">Dense Enzyme Retrieval (DEER)</h2>
+  <p align="center">
+    <!-- Official PyTorch implementation for finding human-bacteria isozymes using learned dense vector representations.
+    <br /> -->
+    Supporting code for the paper: "Exploring Functional Insights into the Human Gut Microbiome via the Structural Proteome" (Liu et al., 2025, Manuscript under revision)
+    <br />
+    <!-- <a href="#about-this-repository"><strong>Explore the docs »</strong></a>
+    <br /> -->
+    <br />
+    <a href="https://github.com/WangJiuming/deer/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/WangJiuming/deer/issues">Request Feature</a>
   </p>
 </p>
 
@@ -23,38 +38,38 @@ DEER (Dense Enzyme Retrieval) provides a method for finding functionally related
 
 ## Installation
 
-First, clone the codebase.
+First, clone the repository:
 ```bash
 git clone https://github.com/WangJiuming/deer.git
 cd deer
 ```
 
-We recommend using Conda for managing dependencies. Users may choose from the following three options based on the hardware available.
+We recommend using Conda for managing dependencies. Choose one of the following options based on your hardware:
 
-**Option 1. GPU with flash attention (recommended)**
+**Option 1. GPU with Flash Attention (Recommended)**
 
-If the hardware supports flash attention (for compatibility, see the <a href="https://github.com/Dao-AILab/flash-attention">official flash attention repository</a> [1]). This is recommended for compatible GPUs for a significant speed-up.
+If the hardware supports Flash Attention (see the <a href="https://github.com/Dao-AILab/flash-attention">official Flash Attention repository</a> [1] for compatibility), this option offers significant speed-ups.
 
 ```bash
 conda env create --name deer --file env/env_gpu_fa.yml
 ```
 
-**Option 2. standard GPU**
+**Option 2. Standard GPU**
 
-If the GPU is not compatible with flash attention, users may proceed with a standard GPU installation.
+If your GPU is not compatible with Flash Attention, use this standard GPU installation.
 
 ```bash
 conda env create --name deer --file env/env_gpu.yml
 ```
 
-**Option 3. CPU**
+**Option 3. CPU Only**
 
-If no GPU is available, users may also install the CPU-only version. However, it can be expected to be significantly slower than the GPU version.
+If no GPU is available, you can install the CPU-only version. Note that this will be significantly slower than GPU versions.
 ```bash
 conda env create --name deer --file env/env_cpu.yml
 ```
 
-After installtion with any of the above three options, activate the environment.
+After installation using any of the above options, activate the Conda environment:
 ```bash
 conda activate deer
 ```
@@ -67,7 +82,7 @@ Follow these steps to download the necessary resources and run the example enzym
 
 The pre-trained model checkpoints are available on servers. To download them to perform inference, run the following.
 ```bash
-wget https://huggingface.co/jmwang9/deer/resolve/main/ckpt.zip -O ckpt.pt
+wget https://huggingface.co/jmwang9/deer/resolve/main/ckpt.zip
 ```
 Alternatively, in case the above link is unavailable, the checkpoint can also be downloaded manually using <a href="https://drive.google.com/file/d/1C8drHpS4-9ONblpR_lUi5iijcJeL0irZ/view?usp=drive_link">this link</a>.
 
@@ -96,9 +111,9 @@ python test.py --config ./config/config_test.yaml
 This script will process the sequences defined in the configuration file.
 Embeddings will be saved to a `./results/reprs.pkl` file (or other places specified within `config_test.yaml`).
 
-**Note**: Based on the hardware, users may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`), batch size (`batch_size`), or worker number (`num_workers`). 
+**Note**: Based on the hardware, you may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`), batch size (`batch_size`), or worker number for the data loader (`num_workers`). 
 
-**Important**: If the CPU version is installed, then the `devices` parameter should be set to `cpu`.
+**Important**: If you installed the CPU-only version (Option 3), ensure the `devices` parameter in `config_test.yaml` is set to `cpu`.
 
 **Step 2. perform dense retrieval**
 
