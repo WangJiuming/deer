@@ -6,7 +6,7 @@ channels:
   - https://repo.anaconda.com/pkgs/main
   - https://repo.anaconda.com/pkgs/r
 dependencies:
-  - python=3.10
+  - python
   - foldseek=9.427df8a=pl5321hb365157_1
   - pip:
       - --extra-index-url https://download.pytorch.org/whl/cu126
