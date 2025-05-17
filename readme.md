@@ -93,45 +93,40 @@ unzip ckpt.zip
 ```
 The `./ckpt/` directory should now contain:
 *   `saprot_35m/`: Files required for the underlying SaProt protein language model [2].
+*   `esm2_t12_35M_UR50D`: Files required for the underlying ESM2 language model [3].
 *   `deer_checkpoint.ckpt`: The pre-trained DEER model checkpoint.
 
 ### Running the retrieval example
 
-We provide an example dataset in the `data/` directory to demonstrate the retrieval process. This dataset contains 5,849 enzyme sequences (1,636 Eukaryota templates and 4,213 Bacteria enzymes) and was used for benchmarking in our paper. The tokenized dataset for the model are also present in `data/`.
+We provide an example dataset to demonstrate the retrieval process. This dataset contains 5,849 enzyme sequences (1,636 eukaryota templates and 4,213 bacteria enzymes) and was used for benchmarking in our paper.
 
-To work with new queries and databases, we also provide the complete data generation workflow, as described in the `preprocess/` directory.
-
-There are two steps to perform retrieval on the working example dataset.
-
-**Step 1. generate embeddings**
-
-Use the `test.py` script to compute embeddings for all sequences in the example dataset.
+To perform retrieval using a group of template structures against a database using the default options:
 ```bash
-python test.py --config ./config/config_test.yaml
+python do_retrieval.py --template_pdb_dir ./data/example/template_pdb/ \
+                       --database_pdb_dir ./data/example/template_pdb/
 ```
 
-This script will process the sequences defined in the configuration file.
-Embeddings will be saved to a `./results/reprs.pkl` file (or other places specified within `config_test.yaml`).
-
-**Note**: Based on the hardware, you may need to adjust settings in `config_test.yaml`, such as GPU allocation (`devices`), batch size (`batch_size`), or worker number for the data loader (`num_workers`). 
-
-**Important**: If you installed the CPU-only version (Option 3), ensure the `devices` parameter in `config_test.yaml` is set to `cpu`.
-
-**Step 2. perform dense retrieval**
-
-Once embeddings are generated, use `do_retrieval.py` to calculate pairwise similarities.
+More options can be set according to the `--help` argument.
 ```bash
-python do_retrieval.py
+python do_retrieval.py --help
 ```
-This script loads the generated embeddings and calculates the Euclidean distance between template (Eukaryota) and query (Bacteria) embeddings.
 
-Results are saved to `/results/retrieval_results.pkl` by default, containing a Pandas DataFrame with the columns:
+Note that if Flash Attention is installed, then the `--use_fa` flag argument can be set to accelerate the process. By default, the model will use all available GPUs whenever GPU is detected in the system, to overide this behavior and use a specific device or opt for CPU, users may set the environment variable `CUDA_VISIBLE_DEVICES` when running the script.
+
+- For using two specific GPU devices:
+```bash
+CUDA_VISIBLE_DEVICES="0,1" python do_retrieval.py ...
+```
+
+- For doing CPU-only inference:
+```bash
+CUDA_VISIBLE_DEVICES="" python do_retrieval.py ...
+```
+
+Results are saved to `/results/similarity.csv` by default, containing a Pandas DataFrame with the columns:
 * `eukaryota_id`: Identifier for the template enzyme.
 * `bacteria_id`: Identifier for the bacteria enzyme.
 * `distance`: Euclidean distance between embeddings. Lower distance indicates higher similarity.
-
-This will output a `.pkl` file in the `./reuslt/` folder storing a dataframe for the pairwise similarities between each template enzyme and each bacteria enzyme. There are three columns in this dataframe: `eukaryota_id`, `bacteria_id`, and `distance`, which is the Euclidean distance between embeddings (hence smaller distance indicates higher degree of similarity).
-
 
 ## Citation
 If you use DEER or this codebase in your research, please cite our paper:
@@ -150,4 +145,5 @@ If you use DEER or this codebase in your research, please cite our paper:
 
 [2] Su, Jin, et al. "Saprot: Protein language modeling with structure-aware vocabulary." bioRxiv (2023): 2023-10.
 
+[3] Lin, Zeming, et al. "Language models of protein sequences at the scale of evolution enable accurate structure prediction." BioRxiv 2022 (2022): 500902.
 

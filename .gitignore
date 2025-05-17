@@ -13,4 +13,10 @@ lightning_logs/
 data/pdb
 data/test_3di_tokens.txt
 
+# ignore the legacy files
+legacy/
+
+# ignore the debugging files
+tmp/
+test_pdb/
 

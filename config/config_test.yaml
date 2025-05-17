@@ -4,7 +4,7 @@ experiment:
   name: 'test'
 
 data:
-  test_fasta_path: './data/test.fasta'
+  test_fasta_dir: './data/test.fasta'
 
   test_esm_input_pkl_dir: './data/'
 
