@@ -94,7 +94,7 @@ unzip ckpt.zip
 ```
 The `./ckpt/` directory should now contain:
 *   `saprot_35m/`: Files required for the underlying SaProt protein language model [2].
-*   `esm2_t12_35M_UR50D`: Files required for the underlying ESM2 language model [3].
+*   `esm2_t12_35M_UR50D/`: Files required for the underlying ESM2 language model [3].
 *   `deer_checkpoint.ckpt`: The pre-trained DEER model checkpoint.
 
 #### 1.2 Dataset
@@ -110,7 +110,7 @@ unzip data.zip
 ```
 The `data/` directory should now contain:
 *   `example/template_pdb/`: 1,636 eukaryota templates' PDB files.
-*   `example/database_pdb`: 4,213 bacteria enzymes' PDB files.
+*   `example/database_pdb/`: 4,213 bacteria enzymes' PDB files.
 
 ### 2. Running the retrieval example
 
@@ -141,6 +141,8 @@ Results are saved to `./results/similarity.csv` by default, containing a Pandas 
 * `eukaryota_id`: Identifier for the template enzyme.
 * `bacteria_id`: Identifier for the bacteria enzyme.
 * `distance`: Euclidean distance between embeddings. Lower distance indicates higher similarity.
+
+Note that if multiple templates are used, the retrieval results for all templates will be saved and sorted together in one file. Users may separate them during further processing.
 
 ## Citation
 If you use DEER or this codebase in your research, please cite our paper:
