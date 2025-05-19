@@ -242,7 +242,8 @@ def main(
         use_fa=True,
         tmp_dir='./tmp',
         top_k=-1,
-        verbose=True
+        verbose=True,
+        database_emb_path=None
 ):
     """
     Args:
@@ -256,6 +257,7 @@ def main(
         tmp_dir (str): the temporary directory to store intermediate files, default is './tmp'.
         top_k (int): the number of top results to keep, default is -1 (keep all).
         verbose (bool): whether to print verbose output, default is True.
+        database_emb_path (str): path to pre-generated database embeddings, if provided, will skip database embedding generation.
 
     Returns:
         list: List of ranking results for each template PDB file.
@@ -270,55 +272,64 @@ def main(
     template_tmp_dir.mkdir(parents=True, exist_ok=True)
     template_fs_3di_dict, template_seq_dict = generate_3di_tokens(template_pdb_dir, template_tmp_dir, verbose)
 
-    # bacteria database
-    database_tmp_dir = Path(tmp_dir) / 'database'
-    database_tmp_dir.mkdir(parents=True, exist_ok=True)
-    database_fs_3di_dict, database_seq_dict = generate_3di_tokens(database_pdb_dir, database_tmp_dir, verbose)
-
-    # 1.2 generate the SaProt tokens
-    # template
+    # 1.2 generate the SaProt tokens for template
     _, template_saprot_pkl_path = generate_saprot_tokens(template_fs_3di_dict, saprot_model_dir, template_tmp_dir,
-                                                         verbose)
-
-    # database
-    _, database_saprot_pkl_path = generate_saprot_tokens(database_fs_3di_dict, saprot_model_dir, database_tmp_dir,
                                                          verbose)
 
     # 1.3 setup device (CPU/GPU)
     device, device_list, use_fa = setup_device(use_fa, verbose)
 
-    # 1.4 generate the ESM tokens
-    # template
+    # 1.4 generate the ESM tokens for template
     _, template_esm_seq_data, template_esm_pkl_path = generate_esm_tokens(template_seq_dict, esm_model_dir, use_fa,
                                                                           template_tmp_dir, verbose)
 
-    # database
-    _, database_esm_seq_data, database_esm_pkl_path = generate_esm_tokens(database_seq_dict, esm_model_dir, use_fa,
-                                                                          database_tmp_dir, verbose)
-
     # Step 2. generate the embeddings for the input tokens
-    # 2.1 write a temporary fasta file for the sequences
-    # template
+    # 2.1 write a temporary fasta file for the template sequences
     template_fasta_path = write_fasta_file(template_esm_seq_data, template_tmp_dir)
 
-    # database
-    database_fasta_path = write_fasta_file(database_esm_seq_data, database_tmp_dir)
-
-    # Step 3. perform retrieval using the embeddings
-    # 3.2 get the embeddings for the templates and databases
+    # Step 3. get embeddings for templates
     template_emb_dict = get_embeddings(
         template_fasta_path, template_esm_pkl_path, template_saprot_pkl_path,
         deer_model_path, esm_model_dir, saprot_model_dir,
-        device, device_list, use_fa, tmp_dir, verbose
+        device, device_list, use_fa, template_tmp_dir, verbose
     )
 
-    database_emb_dict = get_embeddings(
-        database_fasta_path, database_esm_pkl_path, database_saprot_pkl_path,
-        deer_model_path, esm_model_dir, saprot_model_dir,
-        device, device_list, use_fa, tmp_dir, verbose
-    )
+    # Step 4. get database embeddings - either load pre-generated or compute new ones
+    if database_emb_path is not None and Path(database_emb_path).exists():
+        if verbose:
+            print(f'[INFO] Loading pre-generated database embeddings from {database_emb_path}')
+        database_emb_dict = load_embeddings(database_emb_path)
+        if verbose:
+            print(f'[INFO] Loaded embeddings for {len(database_emb_dict)} database entries')
+    else:
+        if verbose and database_emb_path is not None:
+            print(f'[WARNING] Provided database embedding path {database_emb_path} not found, generating new embeddings')
+        
+        # generate database embeddings from scratch
+        # 4.1 generate the 3di tokens with foldseek for database
+        database_tmp_dir = Path(tmp_dir) / 'database'
+        database_tmp_dir.mkdir(parents=True, exist_ok=True)
+        database_fs_3di_dict, database_seq_dict = generate_3di_tokens(database_pdb_dir, database_tmp_dir, verbose)
 
-    # 3.3 perform retrieval using the embeddings
+        # 4.2 generate the SaProt tokens for database
+        _, database_saprot_pkl_path = generate_saprot_tokens(database_fs_3di_dict, saprot_model_dir, database_tmp_dir,
+                                                           verbose)
+
+        # 4.3 generate the ESM tokens for database
+        _, database_esm_seq_data, database_esm_pkl_path = generate_esm_tokens(database_seq_dict, esm_model_dir, use_fa,
+                                                                            database_tmp_dir, verbose)
+
+        # 4.4 write a temporary fasta file for the database sequences
+        database_fasta_path = write_fasta_file(database_esm_seq_data, database_tmp_dir)
+
+        # 4.5 get the embeddings for the database
+        database_emb_dict = get_embeddings(
+            database_fasta_path, database_esm_pkl_path, database_saprot_pkl_path,
+            deer_model_path, esm_model_dir, saprot_model_dir,
+            device, device_list, use_fa, database_tmp_dir, verbose
+        )
+
+    # Step 5. perform retrieval using the embeddings
     results_df = do_retrieval(template_emb_dict, database_emb_dict, output_dir, top_k, verbose)
     
     return results_df
@@ -341,8 +352,10 @@ if __name__ == '__main__':
     parser.add_argument('--tmp_dir', type=str, default='./tmp', help='Path to the temporary directory')
     parser.add_argument('--top_k', type=int, default=-1, help='Number of top results to keep (-1 to keep all)')
     parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
+    parser.add_argument('--database_emb_path', type=str, default=None, 
+                        help='Path to pre-generated database embeddings (.pkl file). If provided, will skip database embedding generation.')
 
     args = parser.parse_args()
 
     main(args.template_pdb_dir, args.database_pdb_dir, args.output_dir, args.deer_model_path, args.saprot_model_dir,
-         args.esm_model_dir, args.use_fa, args.tmp_dir, args.top_k, args.verbose)
+         args.esm_model_dir, args.use_fa, args.tmp_dir, args.top_k, args.verbose, args.database_emb_path)
