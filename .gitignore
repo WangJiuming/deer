@@ -12,6 +12,8 @@ lightning_logs/
 # ignore the large files in the data folder
 data/pdb
 data/test_3di_tokens.txt
+data/
+data.zip
 
 # ignore the legacy files
 legacy/

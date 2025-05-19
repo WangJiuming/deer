@@ -125,11 +125,13 @@ More options can be set according to the `--help` argument.
 python do_retrieval.py --help
 ```
 
-Note that if Flash Attention is installed, then the `--use_fa` flag argument can be set to accelerate the process. By default, the model will use all available GPUs whenever GPU is detected in the system, to overide this behavior and use a specific device or opt for CPU, users may set the environment variable `CUDA_VISIBLE_DEVICES` when running the script.
+Note that if Flash Attention is installed, then the `--use_fa` flag argument can be set to accelerate the process. 
+Currently, the model supports single-GPU or CPU retrieval, which can be enabled by set the environment variable `CUDA_VISIBLE_DEVICES` when running the script.
+<!-- By default, the model will use all available GPUs whenever GPU is detected in the system, to overide this behavior and use a specific device or opt for CPU, users may set the environment variable `CUDA_VISIBLE_DEVICES` when running the script.  -->
 
-- For using two specific GPU devices:
+- For using a specific GPU device:
 ```bash
-CUDA_VISIBLE_DEVICES="0,1" python do_retrieval.py ...
+CUDA_VISIBLE_DEVICES="0" python do_retrieval.py ...
 ```
 
 - For doing CPU-only inference:

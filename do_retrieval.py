@@ -330,6 +330,7 @@ def main(
         )
 
     # Step 5. perform retrieval using the embeddings
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
     results_df = do_retrieval(template_emb_dict, database_emb_dict, output_dir, top_k, verbose)
     
     return results_df
