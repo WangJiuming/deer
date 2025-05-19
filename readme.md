@@ -116,8 +116,8 @@ The `data/` directory should now contain:
 
 To perform retrieval using a group of template structures against a database using the default options:
 ```bash
-python do_retrieval.py --template_pdb_dir ./data/template_pdb/ \
-                       --database_pdb_dir ./data/database_pdb/
+python do_retrieval.py --template_pdb_dir ./data/example/template_pdb/ \
+                       --database_pdb_dir ./data/example/database_pdb/
 ```
 
 More options can be set according to the `--help` argument.
