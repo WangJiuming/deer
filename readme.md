@@ -83,7 +83,7 @@ Follow these steps to download the necessary resources and run the example enzym
 #### 1.1 Model checkpoints
 
 The model will automatically download the necessary checkpoint files from the Hugging Face repository to the local folder `./ckpt` by default.
-As a result, the following manual download is therefore optional and should only be performed if the automatic process fails.
+The following download procedure is therefore optional and should only be performed if the automatic process fails.
 
 The pre-trained model checkpoints are available on servers. To download them to perform inference, run the following.
 ```bash
