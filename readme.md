@@ -81,18 +81,17 @@ Follow these steps to download the necessary resources and run the example enzym
 ### 1. Download resources
 
 #### 1.1 Model checkpoints
+
+The model will automatically download the necessary checkpoint files from the Hugging Face repository to the local folder `./ckpt` by default.
+As a result, the following manual download is therefore optional and should only be performed if the automatic process fails.
+
 The pre-trained model checkpoints are available on servers. To download them to perform inference, run the following.
 ```bash
-wget https://huggingface.co/cuhkaih/deer/resolve/main/ckpt.zip
+huggingface-cli download cuhkaih/deer --local-dir ./ckpt
 ```
 Alternatively, in case the above link is unavailable, the checkpoint can also be downloaded manually using <a href="https://drive.google.com/file/d/1C8drHpS4-9ONblpR_lUi5iijcJeL0irZ/view?usp=drive_link">this link</a>.
 
-
-Then decompress the file.
-```bash
-unzip ckpt.zip
-```
-The `./ckpt/` directory should now contain:
+After download, the `./ckpt/` directory should now contain the following core files:
 *   `saprot_35m/`: Files required for the underlying SaProt protein language model [2].
 *   `esm2_t12_35M_UR50D/`: Files required for the underlying ESM2 language model [3].
 *   `deer_checkpoint.ckpt`: The pre-trained DEER model checkpoint.
@@ -101,8 +100,9 @@ The `./ckpt/` directory should now contain:
 
 Additionally, we provide an working example dataset to demonstrate the retrieval process. This dataset contains 5,849 enzyme structures and was used for benchmarking in our paper. To download the dataset, run the following.
 ```bash
-wget https://huggingface.co/datasets/cuhkaih/deer/resolve/main/data.zip
+huggingface-cli download cuhkaih/deer data.zip --local-dir ./ --repo-type dataset
 ```
+In case the above link is unavailable, the example dataset can also be downloaded manually using <a href="https://drive.google.com/file/d/1UAlddTFwiOz5Hn9Ylg_1SLuh0WQ_URjx/view?usp=drive_link">this link</a>.
 
 Then decompress the file.
 ```bash
