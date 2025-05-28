@@ -6,15 +6,17 @@ import torch
 import torch.nn as nn
 from faesm.esm import FAEsmForMaskedLM
 
+from huggingface_hub import snapshot_download
+
 
 class GMPSModel(pl.LightningModule):
-    def __init__(self, esm_model_dir, saprot_model_dir, save_repr_path, use_fa):
+    def __init__(self, ckpt_dir, save_repr_path, use_fa, download_ckpt=True):
         """
         Args:
-            esm_model_dir (str): Path to the ESM model directory.
-            saprot_model_dir (str): Path to the SaProt model directory.
+            ckpt_dir (str): Path to the checkpoint directory.
             save_repr_path (str): Path to save the extracted representations.
             use_fa (bool): Whether to use Flash Attention in ESM.
+            download_ckpt (bool): Whether to newly download the checkpoint from Hugging Face Hub.
         """
         super().__init__()
 
@@ -22,6 +24,13 @@ class GMPSModel(pl.LightningModule):
         print(f'[INFO] Model: Using flash-attention: {self.use_fa}')
 
         self.save_repr_path = Path(save_repr_path)
+        self.ckpt_dir = Path(ckpt_dir)
+        
+        esm_model_dir = Path(ckpt_dir) / 'esm2_t12_35M_UR50D'
+        saprot_model_dir = Path(ckpt_dir) / 'saprot_35m'
+        
+        if download_ckpt:
+            self.download_checkpoint()
 
         self.esm_model = FAEsmForMaskedLM.from_pretrained(
             esm_model_dir, use_fa=self.use_fa
@@ -64,7 +73,17 @@ class GMPSModel(pl.LightningModule):
         self.test_reprs = {}
 
         self.save_hyperparameters()
-
+        
+    def download_checkpoint(self):
+        repo_id = 'cuhkaih/deer'
+        
+        try:
+            download_ckpt_dir = snapshot_download(repo_id=repo_id, local_dir=self.ckpt_dir)
+            print(f'[INFO] checkpoint downloaded to: {download_ckpt_dir}')
+        except Exception as e:
+            print(f'[ERROR] Could not download checkpoint from {repo_id}. Error: {e}')
+            raise e
+            
     def backbone(self, data_point):
         """
         process the data with the backbone model before passing to the classification and contrastive heads

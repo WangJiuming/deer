@@ -12,6 +12,7 @@ from faesm.esm import FAEsmForMaskedLM
 from model import GMPSModel
 from tqdm import tqdm
 from transformers import EsmTokenizer
+from huggingface_hub import snapshot_download
 
 
 def generate_3di_tokens(template_pdb_dir, tmp_dir, verbose=True):
@@ -52,8 +53,11 @@ def generate_3di_tokens(template_pdb_dir, tmp_dir, verbose=True):
     return fs_3di_dict, seq_dict
 
 
-def generate_saprot_tokens(fs_3di_dict, saprot_model_dir, tmp_dir, verbose=True):
+def generate_saprot_tokens(fs_3di_dict, ckpt_dir, tmp_dir, verbose=True):
     """Generate SaProt tokens for sequences."""
+    
+    saprot_model_dir = Path(ckpt_dir) / 'saprot_35m'
+    
     saprot_tokenizer = EsmTokenizer.from_pretrained(saprot_model_dir)
 
     saprot_token_dict = {}
@@ -97,8 +101,24 @@ def setup_device(use_fa, verbose=True):
     return device, device_list, use_fa
 
 
-def generate_esm_tokens(seq_dict, esm_model_dir, use_fa, tmp_dir, verbose=True):
+def download_checkpoint(ckpt_dir):
+    """Download the DEER model checkpoint from Hugging Face Hub."""
+    
+    repo_id = 'cuhkaih/deer'
+        
+    try:
+        download_ckpt_dir = snapshot_download(repo_id=repo_id, local_dir=ckpt_dir)
+        print(f'[INFO] checkpoint downloaded to: {download_ckpt_dir}')
+    except Exception as e:
+        print(f'[ERROR] Could not download checkpoint from {repo_id}. Error: {e}')
+        raise e
+
+
+def generate_esm_tokens(seq_dict, ckpt_dir, use_fa, tmp_dir, verbose=True):
     """Generate ESM tokens for sequences."""
+    
+    esm_model_dir = Path(ckpt_dir) / 'esm2_t12_35M_UR50D'
+    
     esm_model = FAEsmForMaskedLM.from_pretrained(esm_model_dir, use_fa=use_fa)
 
     esm_seq_data = [(seq_id, seq) for seq_id, seq in seq_dict.items()]
@@ -150,14 +170,13 @@ def load_embeddings(emb_path):
 
 
 def get_embeddings(fasta_path, esm_pkl_path, saprot_pkl_path,
-                   deer_model_path, esm_model_dir, saprot_model_dir,
+                   deer_model_path, ckpt_dir,
                    device, device_list, use_fa, tmp_dir, verbose=True):
     """Get embeddings for templates using the GMPS model."""
     data_module = GMPSDataModule(fasta_path, esm_pkl_path, saprot_pkl_path, device)
 
-    model = GMPSModel.load_from_checkpoint(deer_model_path, esm_model_dir=esm_model_dir,
-                                           saprot_model_dir=saprot_model_dir,
-                                           save_repr_path=f'{tmp_dir}/reprs.pkl', use_fa=use_fa)
+    model = GMPSModel.load_from_checkpoint(deer_model_path, ckpt_dir=ckpt_dir,
+                                           save_repr_path=f'{tmp_dir}/reprs.pkl', use_fa=use_fa, download_checkpoint=False)
     model.eval()
 
     if device == 'cpu':
@@ -237,8 +256,7 @@ def main(
         database_pdb_dir,
         output_dir='./result',
         deer_model_path='./ckpt/deer_checkpoint.ckpt',
-        saprot_model_dir='./ckpt/saprot_35m/',
-        esm_model_dir='./ckpt/esm2_t12_35M_UR50D/',
+        ckpt_dir='./ckpt',
         use_fa=True,
         tmp_dir='./tmp',
         top_k=-1,
@@ -251,8 +269,7 @@ def main(
         database_pdb_dir (str): the path to the directory of the database containing the PDB files.
         output_dir (str): the path to the directory to save the results (CSV file), default is './result'.
         deer_model_path (str): the path to the DEER model checkpoint, default is './ckpt/deer_checkpoint.ckpt'.
-        saprot_model_dir (str): the path to the directory of the SaProt model config and checkpoint, default is '../ckpt/saprot_35m'.
-        esm_model_dir (str): the path to the directory of the ESM model config and checkpoint, default is './ckpt/esm2_t12_35M_UR50D/'.
+        ckpt_dir (str): the path to the directory containing the checkpoints, default is './ckpt'.
         use_fa (bool): whether to use the Flash Attention in ESM, default is True.
         tmp_dir (str): the temporary directory to store intermediate files, default is './tmp'.
         top_k (int): the number of top results to keep, default is -1 (keep all).
@@ -264,6 +281,8 @@ def main(
     """
 
     pl.seed_everything(42, workers=True)
+    
+    download_checkpoint(ckpt_dir)
 
     # Step 1. generate the input tokens for the template PDB files
     # 1.1 generate the 3di tokens with foldseek
@@ -273,14 +292,14 @@ def main(
     template_fs_3di_dict, template_seq_dict = generate_3di_tokens(template_pdb_dir, template_tmp_dir, verbose)
 
     # 1.2 generate the SaProt tokens for template
-    _, template_saprot_pkl_path = generate_saprot_tokens(template_fs_3di_dict, saprot_model_dir, template_tmp_dir,
+    _, template_saprot_pkl_path = generate_saprot_tokens(template_fs_3di_dict, ckpt_dir, template_tmp_dir,
                                                          verbose)
 
     # 1.3 setup device (CPU/GPU)
     device, device_list, use_fa = setup_device(use_fa, verbose)
 
     # 1.4 generate the ESM tokens for template
-    _, template_esm_seq_data, template_esm_pkl_path = generate_esm_tokens(template_seq_dict, esm_model_dir, use_fa,
+    _, template_esm_seq_data, template_esm_pkl_path = generate_esm_tokens(template_seq_dict, ckpt_dir, use_fa,
                                                                           template_tmp_dir, verbose)
 
     # Step 2. generate the embeddings for the input tokens
@@ -290,7 +309,7 @@ def main(
     # Step 3. get embeddings for templates
     template_emb_dict = get_embeddings(
         template_fasta_path, template_esm_pkl_path, template_saprot_pkl_path,
-        deer_model_path, esm_model_dir, saprot_model_dir,
+        deer_model_path, ckpt_dir,
         device, device_list, use_fa, template_tmp_dir, verbose
     )
 
@@ -312,11 +331,11 @@ def main(
         database_fs_3di_dict, database_seq_dict = generate_3di_tokens(database_pdb_dir, database_tmp_dir, verbose)
 
         # 4.2 generate the SaProt tokens for database
-        _, database_saprot_pkl_path = generate_saprot_tokens(database_fs_3di_dict, saprot_model_dir, database_tmp_dir,
+        _, database_saprot_pkl_path = generate_saprot_tokens(database_fs_3di_dict, ckpt_dir, database_tmp_dir,
                                                            verbose)
 
         # 4.3 generate the ESM tokens for database
-        _, database_esm_seq_data, database_esm_pkl_path = generate_esm_tokens(database_seq_dict, esm_model_dir, use_fa,
+        _, database_esm_seq_data, database_esm_pkl_path = generate_esm_tokens(database_seq_dict, ckpt_dir, use_fa,
                                                                             database_tmp_dir, verbose)
 
         # 4.4 write a temporary fasta file for the database sequences
@@ -325,7 +344,7 @@ def main(
         # 4.5 get the embeddings for the database
         database_emb_dict = get_embeddings(
             database_fasta_path, database_esm_pkl_path, database_saprot_pkl_path,
-            deer_model_path, esm_model_dir, saprot_model_dir,
+            deer_model_path, ckpt_dir,
             device, device_list, use_fa, database_tmp_dir, verbose
         )
 
@@ -345,10 +364,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--deer_model_path', type=str, default='./ckpt/deer_checkpoint.ckpt',
                         help='Path to the DEER model checkpoint')
-    parser.add_argument('--saprot_model_dir', type=str, default='./ckpt/saprot_35m/',
-                        help='Path to the SaProt model directory')
-    parser.add_argument('--esm_model_dir', type=str, default='./ckpt/esm2_t12_35M_UR50D/',
-                        help='Path to the ESM model directory')
+    parser.add_argument('--ckpt_dir', type=str, default='./ckpt',
+                        help='Path to the directory containing all the checkpoints')
     parser.add_argument('--use_fa', action='store_true', help='Use Flash Attention in ESM')
     parser.add_argument('--tmp_dir', type=str, default='./tmp', help='Path to the temporary directory')
     parser.add_argument('--top_k', type=int, default=-1, help='Number of top results to keep (-1 to keep all)')
@@ -358,5 +375,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args.template_pdb_dir, args.database_pdb_dir, args.output_dir, args.deer_model_path, args.saprot_model_dir,
-         args.esm_model_dir, args.use_fa, args.tmp_dir, args.top_k, args.verbose, args.database_emb_path)
+    main(args.template_pdb_dir, args.database_pdb_dir, args.output_dir, args.deer_model_path, args.ckpt_dir, 
+         args.use_fa, args.tmp_dir, args.top_k, args.verbose, args.database_emb_path)
