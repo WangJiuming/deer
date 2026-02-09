@@ -11,14 +11,16 @@
   <p align="center">
     <!-- Official PyTorch implementation for finding human-bacteria isozymes using learned dense vector representations.
     <br /> -->
-    Supporting code for the paper: "Exploring Functional Insights into the Human Gut Microbiome via the Structural Proteome" (Liu et al., 2025, Manuscript under revision)
+    Supporting code for the paper<br>
+    "Exploring Functional Insights into the Human Gut Microbiome via the Structural Proteome"<br>
+    (Cell Host & Microbe, 2026)
     <br />
     <!-- <a href="#about-this-repository"><strong>Explore the docs »</strong></a>
     <br /> -->
     <br />
-    <a href="https://github.com/WangJiuming/deer/issues">Report Bug</a>
+    <!-- <a href="https://github.com/WangJiuming/deer/issues">Report Bug</a>
     ·
-    <a href="https://github.com/WangJiuming/deer/issues">Request Feature</a>
+    <a href="https://github.com/WangJiuming/deer/issues">Request Feature</a> -->
   </p>
 </p>
 
@@ -27,8 +29,8 @@
 * [About this repository](#about-this-repository)
 * [Installation](#installation)
 * [Getting started](#getting-started)
-  * [Download resources](#download-resources)
-  * [Running the example](#running-the-retrieval-example)
+  * [Download resources](#1-download-resources)
+  * [Running the example](#2-running-the-retrieval-example)
 * [Citation](#citation)
 * [References](#references)
 
@@ -111,6 +113,7 @@ unzip data.zip
 The `data/` directory should now contain:
 *   `example/template_pdb/`: 1,636 eukaryota templates' PDB files.
 *   `example/database_pdb/`: 4,213 bacteria enzymes' PDB files.
+*   `example/metadata.csv`: Metadata for all the PDB files.
 
 ### 2. Running the retrieval example
 
@@ -149,11 +152,15 @@ Note that if multiple templates are used, the retrieval results for all template
 ## Citation
 If you use DEER or this codebase in your research, please cite our paper:
 ```
-@misc{liu2025Exploring,
-  author={Liu, H. and Shen, J. and others},
-  title={Exploring Functional Insights into the Human Gut Microbiome via the Structural Proteome},
-  year={2025},
-  note={Manuscript under revision}
+@article{liu2026exploring,
+  title={Exploring functional insights into the human gut microbiome via the structural proteome},
+  author={Liu, Hongbin and Shen, Juntao and Zhang, Zhiwei and Wang, Jiuming and Zhang, Chengxin and Zheng, Linggang and Ni, Haoran and Hong, Liang and Zhang, Jieqiong and Xue, Dongfang and others},
+  journal={Cell Host \& Microbe},
+  volume={34},
+  number={1},
+  pages={167--185},
+  year={2026},
+  publisher={Elsevier}
 }
 ```
 
